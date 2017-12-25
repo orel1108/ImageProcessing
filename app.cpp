@@ -1,13 +1,13 @@
 #include <QApplication>
 
-#include "imageviewer.h"
+#include "image_processing.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    ImageViewer viewer;
-    viewer.show();
+    ImageProcessing processor;
+    processor.show();
 
     return app.exec();
 }

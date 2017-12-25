@@ -1,4 +1,4 @@
-#include "imageviewer.h"
+#include "image_processing.h"
 
 #include <QByteArray>
 #include <QFileDialog>
@@ -43,7 +43,7 @@ namespace
 
 ///////////////////////////////////////////////////////////////////////////////
 
-ImageViewer::ImageViewer(QWidget * ip_parent)
+ImageProcessing::ImageProcessing(QWidget * ip_parent)
   : QMainWindow(ip_parent)
   , mp_image_label(new QLabel)
   , mp_scroll_area(new QScrollArea)
@@ -67,7 +67,7 @@ ImageViewer::ImageViewer(QWidget * ip_parent)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-bool ImageViewer::LoadImage(const QString & i_filename)
+bool ImageProcessing::LoadImage(const QString & i_filename)
 {
   QImageReader reader(i_filename);
   reader.setAutoTransform(true);
@@ -83,7 +83,7 @@ bool ImageViewer::LoadImage(const QString & i_filename)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void ImageViewer::_Open()
+void ImageProcessing::_Open()
 {
   QFileDialog dialog(this, tr("Open File"));
   _InitializeImageFileDialog(dialog, QFileDialog::AcceptOpen);
@@ -92,7 +92,7 @@ void ImageViewer::_Open()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void ImageViewer::_SaveAs()
+void ImageProcessing::_SaveAs()
 {
   QFileDialog dialog(this, tr("Save File As"));
   _InitializeImageFileDialog(dialog, QFileDialog::AcceptSave);
@@ -101,15 +101,15 @@ void ImageViewer::_SaveAs()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void ImageViewer::_CreateActions()
+void ImageProcessing::_CreateActions()
 {
   // setup file menu
   QMenu* p_file_menu = menuBar()->addMenu(tr("&File"));
 
-  QAction* p_open_action = p_file_menu->addAction(tr("&Open..."), this, &ImageViewer::_Open);
+  QAction* p_open_action = p_file_menu->addAction(tr("&Open..."), this, &ImageProcessing::_Open);
   p_open_action->setShortcut(QKeySequence::Open);
 
-  mp_save_as = p_file_menu->addAction(tr("&Save As..."), this, &ImageViewer::_SaveAs);
+  mp_save_as = p_file_menu->addAction(tr("&Save As..."), this, &ImageProcessing::_SaveAs);
   mp_save_as->setEnabled(false);
 
   p_file_menu->addSeparator();
@@ -120,31 +120,31 @@ void ImageViewer::_CreateActions()
   // setup edit menu
   QMenu* p_edit_menu = menuBar()->addMenu(tr("&Edit"));
 
-  //copyAct = editMenu->addAction(tr("&Copy"), this, &ImageViewer::copy);
+  //copyAct = editMenu->addAction(tr("&Copy"), this, &ImageProcessing::copy);
   //copyAct->setShortcut(QKeySequence::Copy);
   //copyAct->setEnabled(false);
   //
-  //QAction *pasteAct = editMenu->addAction(tr("&Paste"), this, &ImageViewer::paste);
+  //QAction *pasteAct = editMenu->addAction(tr("&Paste"), this, &ImageProcessing::paste);
   //pasteAct->setShortcut(QKeySequence::Paste);
 
   // setup view menu
   QMenu* p_view_menu = menuBar()->addMenu(tr("&View"));
 
-  mp_zoom_in = p_view_menu->addAction(tr("Zoom &In (25%)"), this, &ImageViewer::_ZoomIn);
+  mp_zoom_in = p_view_menu->addAction(tr("Zoom &In (25%)"), this, &ImageProcessing::_ZoomIn);
   mp_zoom_in->setShortcut(QKeySequence::ZoomIn);
   mp_zoom_in->setEnabled(false);
 
-  mp_zoom_out = p_view_menu->addAction(tr("Zoom &Out (25%)"), this, &ImageViewer::_ZoomOut);
+  mp_zoom_out = p_view_menu->addAction(tr("Zoom &Out (25%)"), this, &ImageProcessing::_ZoomOut);
   mp_zoom_out->setShortcut(QKeySequence::ZoomOut);
   mp_zoom_out->setEnabled(false);
 
-  mp_normal_size = p_view_menu->addAction(tr("&Normal Size"), this, &ImageViewer::_NormalSize);
+  mp_normal_size = p_view_menu->addAction(tr("&Normal Size"), this, &ImageProcessing::_NormalSize);
   mp_normal_size->setShortcut(tr("Ctrl+S"));
   mp_normal_size->setEnabled(false);
 
   p_view_menu->addSeparator();
 
-  mp_fit_to_window = p_view_menu->addAction(tr("&Fit to Window"), this, &ImageViewer::_FitToWindow);
+  mp_fit_to_window = p_view_menu->addAction(tr("&Fit to Window"), this, &ImageProcessing::_FitToWindow);
   mp_fit_to_window->setEnabled(false);
   mp_fit_to_window->setCheckable(true);
   mp_fit_to_window->setShortcut(tr("Ctrl+F"));
@@ -152,7 +152,7 @@ void ImageViewer::_CreateActions()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void ImageViewer::_SetImage(const QImage & i_image)
+void ImageProcessing::_SetImage(const QImage & i_image)
 {
   m_image = i_image;
 
@@ -173,7 +173,7 @@ void ImageViewer::_SetImage(const QImage & i_image)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-bool ImageViewer::_SaveImage(const QString & i_filename)
+bool ImageProcessing::_SaveImage(const QString & i_filename)
 {
   QImageWriter writer(i_filename);
   return writer.write(m_image);
@@ -181,7 +181,7 @@ bool ImageViewer::_SaveImage(const QString & i_filename)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void ImageViewer::_UpdateActions()
+void ImageProcessing::_UpdateActions()
 {
   mp_save_as->setEnabled(!m_image.isNull());
 
@@ -192,7 +192,7 @@ void ImageViewer::_UpdateActions()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void ImageViewer::_FitToWindow()
+void ImageProcessing::_FitToWindow()
 {
   const bool fit = mp_fit_to_window->isChecked();
   mp_scroll_area->setWidgetResizable(fit);
@@ -204,7 +204,7 @@ void ImageViewer::_FitToWindow()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void ImageViewer::_NormalSize()
+void ImageProcessing::_NormalSize()
 {
   mp_image_label->adjustSize();
   m_scale = 1.0;
@@ -212,21 +212,21 @@ void ImageViewer::_NormalSize()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void ImageViewer::_ZoomIn()
+void ImageProcessing::_ZoomIn()
 {
   _ScaleImage(1.25);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void ImageViewer::_ZoomOut()
+void ImageProcessing::_ZoomOut()
 {
   _ScaleImage(0.75);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void ImageViewer::_ScaleImage(double i_factor)
+void ImageProcessing::_ScaleImage(double i_factor)
 {
   Q_ASSERT(mp_image_label->pixmap());
   m_scale *= i_factor;
@@ -241,7 +241,7 @@ void ImageViewer::_ScaleImage(double i_factor)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void ImageViewer::_AdjustScrollBar(QScrollBar* op_scroll_bar, double i_factor)
+void ImageProcessing::_AdjustScrollBar(QScrollBar* op_scroll_bar, double i_factor)
 {
   op_scroll_bar->setValue(int(i_factor * op_scroll_bar->value()
                               + ((i_factor - 1) * op_scroll_bar->pageStep() / 2)));

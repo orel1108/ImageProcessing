@@ -8,11 +8,11 @@ class QLabel;
 class QScrollArea;
 class QScrollBar;
 
-class ImageViewer : public QMainWindow
+class ImageProcessing : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit ImageViewer(QWidget * ip_parent = nullptr);
+    explicit ImageProcessing(QWidget * ip_parent = nullptr);
 
     bool LoadImage(const QString & i_filename);
 

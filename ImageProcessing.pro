@@ -6,7 +6,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 SOURCES += \
     app.cpp \
-    imageviewer.cpp
+    image_processing.cpp
 
 HEADERS += \
-    imageviewer.h
+    image_processing.h
