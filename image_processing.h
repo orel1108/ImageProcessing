@@ -32,6 +32,7 @@ private:
     QAction*     mp_zoom_in;
     QAction*     mp_zoom_out;
     QAction*     mp_normal_size;
+    QAction*     mp_invert;
 
     void _CreateActions();
     void _SetImage(const QImage & i_image);
@@ -43,6 +44,8 @@ private:
     void _ZoomOut();
     void _ScaleImage(double i_factor);
     void _AdjustScrollBar(QScrollBar* op_scroll_bar, double i_factor);
+
+    void _Invert();
 };
 
 #endif // IMAGEVIEWER_H

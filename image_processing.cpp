@@ -148,6 +148,12 @@ void ImageProcessing::_CreateActions()
   mp_fit_to_window->setEnabled(false);
   mp_fit_to_window->setCheckable(true);
   mp_fit_to_window->setShortcut(tr("Ctrl+F"));
+
+  // operations
+  QMenu* p_operation_menu = menuBar()->addMenu(tr("&Operations"));
+
+  mp_invert = p_operation_menu->addAction(tr("Invert"), this, &ImageProcessing::_Invert);
+  mp_invert->setEnabled(false);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -188,6 +194,8 @@ void ImageProcessing::_UpdateActions()
   mp_zoom_in->setEnabled(!mp_fit_to_window->isChecked());
   mp_zoom_out->setEnabled(!mp_fit_to_window->isChecked());
   mp_normal_size->setEnabled(!mp_fit_to_window->isChecked());
+
+  mp_invert->setEnabled(!m_image.isNull());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -245,6 +253,15 @@ void ImageProcessing::_AdjustScrollBar(QScrollBar* op_scroll_bar, double i_facto
 {
   op_scroll_bar->setValue(int(i_factor * op_scroll_bar->value()
                               + ((i_factor - 1) * op_scroll_bar->pageStep() / 2)));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void ImageProcessing::_Invert()
+{
+  m_image = mp_image_label->pixmap()->toImage();
+  m_image.invertPixels(QImage::InvertMode::InvertRgb);
+  mp_image_label->setPixmap(QPixmap::fromImage(m_image));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
