@@ -1,7 +1,6 @@
-#ifndef IMAGEVIEWER_H
-#define IMAGEVIEWER_H
+#pragma once
 
-#include <QMainWindow>
+#include <QtWidgets/QMainWindow>
 
 class QAction;
 class QLabel;
@@ -9,18 +8,19 @@ class QScrollArea;
 class QScrollBar;
 
 class ImageProcessing : public QMainWindow
-{
-    Q_OBJECT
-public:
+  {
+  Q_OBJECT
+
+  public:
     explicit ImageProcessing(QWidget * ip_parent = nullptr);
 
     bool LoadImage(const QString & i_filename);
 
-private slots:
+    private slots:
     void _Open();
     void _SaveAs();
 
-private:
+  private:
     QImage       m_image;
     QLabel*      mp_image_label;
     QScrollArea* mp_scroll_area;
@@ -46,6 +46,4 @@ private:
     void _AdjustScrollBar(QScrollBar* op_scroll_bar, double i_factor);
 
     void _Invert();
-};
-
-#endif // IMAGEVIEWER_H
+  };

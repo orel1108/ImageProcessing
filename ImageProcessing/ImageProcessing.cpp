@@ -1,4 +1,4 @@
-#include "image_processing.h"
+#include "ImageProcessing.h"
 
 #include <QByteArray>
 #include <QFileDialog>
@@ -14,23 +14,23 @@
 #include <QStandardPaths>
 
 namespace
-{
-  void _InitializeImageFileDialog(QFileDialog & o_dialog, const QFileDialog::AcceptMode & i_accept_mode)
   {
+  void _InitializeImageFileDialog(QFileDialog & o_dialog, const QFileDialog::AcceptMode & i_accept_mode)
+    {
     static bool first_dialog = true;
 
     if (first_dialog)
       {
-        first_dialog  = false;
-        const QStringList pic_loc = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
-        o_dialog.setDirectory(pic_loc.isEmpty() ? QDir::currentPath() : pic_loc.last());
+      first_dialog = false;
+      const QStringList pic_loc = QStandardPaths::standardLocations(QStandardPaths::PicturesLocation);
+      o_dialog.setDirectory(pic_loc.isEmpty() ? QDir::currentPath() : pic_loc.last());
       }
 
     const QByteArrayList supportedMimeTypes = i_accept_mode == QFileDialog::AcceptOpen
-        ? QImageReader::supportedMimeTypes() : QImageWriter::supportedMimeTypes();
+      ? QImageReader::supportedMimeTypes() : QImageWriter::supportedMimeTypes();
 
     QStringList mime_type_filters;
-    foreach (const QByteArray &mimeTypeName, supportedMimeTypes)
+    foreach(const QByteArray &mimeTypeName, supportedMimeTypes)
       mime_type_filters.append(mimeTypeName);
 
     mime_type_filters.sort();
@@ -38,8 +38,8 @@ namespace
     o_dialog.selectMimeTypeFilter("image/jpeg");
     if (i_accept_mode == QFileDialog::AcceptSave)
       o_dialog.setDefaultSuffix("jpg");
+    }
   }
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -48,7 +48,7 @@ ImageProcessing::ImageProcessing(QWidget * ip_parent)
   , mp_image_label(new QLabel)
   , mp_scroll_area(new QScrollArea)
   , m_scale(1.0)
-{
+  {
   // setup image label
   mp_image_label->setBackgroundRole(QPalette::Base);
   mp_image_label->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
@@ -63,12 +63,12 @@ ImageProcessing::ImageProcessing(QWidget * ip_parent)
   _CreateActions();
 
   resize(QGuiApplication::primaryScreen()->availableSize() * 4 / 5);
-}
+  }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 bool ImageProcessing::LoadImage(const QString & i_filename)
-{
+  {
   QImageReader reader(i_filename);
   reader.setAutoTransform(true);
 
@@ -79,30 +79,30 @@ bool ImageProcessing::LoadImage(const QString & i_filename)
   _SetImage(image);
   setWindowFilePath(i_filename);
   return true;
-}
+  }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void ImageProcessing::_Open()
-{
+  {
   QFileDialog dialog(this, tr("Open File"));
   _InitializeImageFileDialog(dialog, QFileDialog::AcceptOpen);
   while (dialog.exec() == QDialog::Accepted && !LoadImage(dialog.selectedFiles().first())) {}
-}
+  }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void ImageProcessing::_SaveAs()
-{
+  {
   QFileDialog dialog(this, tr("Save File As"));
   _InitializeImageFileDialog(dialog, QFileDialog::AcceptSave);
   while (dialog.exec() == QDialog::Accepted && !_SaveImage(dialog.selectedFiles().first())) {}
-}
+  }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void ImageProcessing::_CreateActions()
-{
+  {
   // setup file menu
   QMenu* p_file_menu = menuBar()->addMenu(tr("&File"));
 
@@ -154,12 +154,12 @@ void ImageProcessing::_CreateActions()
 
   mp_invert = p_operation_menu->addAction(tr("Invert"), this, &ImageProcessing::_Invert);
   mp_invert->setEnabled(false);
-}
+  }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void ImageProcessing::_SetImage(const QImage & i_image)
-{
+  {
   m_image = i_image;
 
   mp_image_label->setPixmap(QPixmap::fromImage(m_image));
@@ -175,20 +175,20 @@ void ImageProcessing::_SetImage(const QImage & i_image)
 
   if (!mp_fit_to_window->isChecked())
     mp_image_label->adjustSize();
-}
+  }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 bool ImageProcessing::_SaveImage(const QString & i_filename)
-{
+  {
   QImageWriter writer(i_filename);
   return writer.write(m_image);
-}
+  }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void ImageProcessing::_UpdateActions()
-{
+  {
   mp_save_as->setEnabled(!m_image.isNull());
 
   mp_zoom_in->setEnabled(!mp_fit_to_window->isChecked());
@@ -196,46 +196,46 @@ void ImageProcessing::_UpdateActions()
   mp_normal_size->setEnabled(!mp_fit_to_window->isChecked());
 
   mp_invert->setEnabled(!m_image.isNull());
-}
+  }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void ImageProcessing::_FitToWindow()
-{
+  {
   const bool fit = mp_fit_to_window->isChecked();
   mp_scroll_area->setWidgetResizable(fit);
   if (!fit)
     _NormalSize();
 
   _UpdateActions();
-}
+  }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void ImageProcessing::_NormalSize()
-{
+  {
   mp_image_label->adjustSize();
   m_scale = 1.0;
-}
+  }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void ImageProcessing::_ZoomIn()
-{
+  {
   _ScaleImage(1.25);
-}
+  }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void ImageProcessing::_ZoomOut()
-{
+  {
   _ScaleImage(0.75);
-}
+  }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void ImageProcessing::_ScaleImage(double i_factor)
-{
+  {
   Q_ASSERT(mp_image_label->pixmap());
   m_scale *= i_factor;
   mp_image_label->resize(m_scale * mp_image_label->pixmap()->size());
@@ -245,23 +245,21 @@ void ImageProcessing::_ScaleImage(double i_factor)
 
   mp_zoom_in->setEnabled(m_scale < 3.0);
   mp_zoom_out->setEnabled(m_scale > 0.333);
-}
+  }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void ImageProcessing::_AdjustScrollBar(QScrollBar* op_scroll_bar, double i_factor)
-{
+  {
   op_scroll_bar->setValue(int(i_factor * op_scroll_bar->value()
-                              + ((i_factor - 1) * op_scroll_bar->pageStep() / 2)));
-}
+    + ((i_factor - 1) * op_scroll_bar->pageStep() / 2)));
+  }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 void ImageProcessing::_Invert()
-{
+  {
   m_image = mp_image_label->pixmap()->toImage();
   m_image.invertPixels(QImage::InvertMode::InvertRgb);
   mp_image_label->setPixmap(QPixmap::fromImage(m_image));
-}
-
-///////////////////////////////////////////////////////////////////////////////
+  }
