@@ -1,43 +1,65 @@
 #pragma once
 
+#include <QLabel>
+#include <QScrollArea>
+
 #include <QtWidgets/QMainWindow>
 
+#include <memory>
+
 class QAction;
-class QLabel;
-class QScrollArea;
 class QScrollBar;
 
+/**
+ * @class ImageProcessing.
+ * @brief Class implements image processing GUI.
+ */
 class ImageProcessing : public QMainWindow
   {
   Q_OBJECT
 
   public:
+    /**
+     * @brief Default constructor.
+     * @param[in] ip_parent Pointer to the parent widget.
+     */
     explicit ImageProcessing(QWidget * ip_parent = nullptr);
 
-    bool LoadImage(const QString & i_filename);
-
-    private slots:
+  private slots:
     void _Open();
     void _SaveAs();
 
   private:
-    QImage       m_image;
-    QLabel*      mp_image_label;
-    QScrollArea* mp_scroll_area;
-    double       m_scale;
+    // class member
+    QImage                       m_image;
+    std::unique_ptr<QLabel>      mp_image_label;
+    std::unique_ptr<QScrollArea> mp_scroll_area;
+    double                       m_scale;
 
     /// actions
-    QAction*     mp_save_as;
-    QAction*     mp_fit_to_window;
-    QAction*     mp_zoom_in;
-    QAction*     mp_zoom_out;
-    QAction*     mp_normal_size;
-    QAction*     mp_invert;
+    QAction* mp_save_as_action;
 
+    QAction* mp_fit_to_window;
+    QAction* mp_zoom_in;
+    QAction* mp_zoom_out;
+    QAction* mp_normal_size;
+
+    QAction* mp_invert;
+
+    // actions setup
     void _CreateActions();
-    void _SetImage(const QImage & i_image);
-    bool _SaveImage(const QString & i_filename);
+    void _CreateFileMenuActions();
+    void _CreateOperationsMenuActions();
+    void _CreateViewMenuActions();
     void _UpdateActions();
+
+    // IO
+    bool _LoadImage(const QString & i_filename);
+    bool _SaveImage(const QString & i_filename);
+    
+    void _SetImage(const QImage & i_image);
+    
+    // scale
     void _FitToWindow();
     void _NormalSize();
     void _ZoomIn();

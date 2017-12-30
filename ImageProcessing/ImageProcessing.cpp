@@ -14,6 +14,7 @@
 #include <QStandardPaths>
 
 #include "ImageIO.h"
+#include "ImageOperationInvertPixels.h"
 
 namespace
   {
@@ -28,7 +29,7 @@ namespace
       o_dialog.setDirectory(pic_loc.isEmpty() ? QDir::currentPath() : pic_loc.last());
       }
 
-    const QByteArrayList supportedMimeTypes = i_accept_mode == QFileDialog::AcceptOpen
+    const auto supportedMimeTypes = i_accept_mode == QFileDialog::AcceptOpen
       ? QImageReader::supportedMimeTypes() : QImageWriter::supportedMimeTypes();
 
     QStringList mime_type_filters;
@@ -58,9 +59,9 @@ ImageProcessing::ImageProcessing(QWidget * ip_parent)
 
   // setup scroll area
   mp_scroll_area->setBackgroundRole(QPalette::Dark);
-  mp_scroll_area->setWidget(mp_image_label);
+  mp_scroll_area->setWidget(mp_image_label.get());
   mp_scroll_area->setVisible(false);
-  setCentralWidget(mp_scroll_area);
+  setCentralWidget(mp_scroll_area.get());
 
   _CreateActions();
 
@@ -69,24 +70,11 @@ ImageProcessing::ImageProcessing(QWidget * ip_parent)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-bool ImageProcessing::LoadImage(const QString & i_filename)
-  {
-  ImageIO loader;
-  if (!loader.Load(i_filename))
-    return false;
-
-  _SetImage(loader.Get());
-  setWindowFilePath(i_filename);
-  return true;
-  }
-
-///////////////////////////////////////////////////////////////////////////////
-
 void ImageProcessing::_Open()
   {
   QFileDialog dialog(this, tr("Open File"));
   _InitializeImageFileDialog(dialog, QFileDialog::AcceptOpen);
-  while (dialog.exec() == QDialog::Accepted && !LoadImage(dialog.selectedFiles().first())) {}
+  while (dialog.exec() == QDialog::Accepted && !_LoadImage(dialog.selectedFiles().first())) {}
   }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -103,56 +91,112 @@ void ImageProcessing::_SaveAs()
 void ImageProcessing::_CreateActions()
   {
   // setup file menu
+  _CreateFileMenuActions();
+
+  // setup view menu
+  _CreateViewMenuActions();
+
+  // setup operations menu
+  _CreateOperationsMenuActions();
+  }
+
+///////////////////////////////////////////////////////////////////////////////
+
+void ImageProcessing::_CreateFileMenuActions()
+  {
+  // file menu
   QMenu* p_file_menu = menuBar()->addMenu(tr("&File"));
 
+  // open
   QAction* p_open_action = p_file_menu->addAction(tr("&Open..."), this, &ImageProcessing::_Open);
   p_open_action->setShortcut(QKeySequence::Open);
 
-  mp_save_as = p_file_menu->addAction(tr("&Save As..."), this, &ImageProcessing::_SaveAs);
-  mp_save_as->setEnabled(false);
+  // save as
+  mp_save_as_action = p_file_menu->addAction(tr("&Save As..."), this, &ImageProcessing::_SaveAs);
+  mp_save_as_action->setEnabled(false);
 
   p_file_menu->addSeparator();
 
+  // exit
   QAction* p_exit_action = p_file_menu->addAction(tr("E&xit"), this, &QWidget::close);
   p_exit_action->setShortcut(tr("Ctrl+Q"));
+  }
 
-  // setup edit menu
-  QMenu* p_edit_menu = menuBar()->addMenu(tr("&Edit"));
+///////////////////////////////////////////////////////////////////////////////
 
-  //copyAct = editMenu->addAction(tr("&Copy"), this, &ImageProcessing::copy);
-  //copyAct->setShortcut(QKeySequence::Copy);
-  //copyAct->setEnabled(false);
-  //
-  //QAction *pasteAct = editMenu->addAction(tr("&Paste"), this, &ImageProcessing::paste);
-  //pasteAct->setShortcut(QKeySequence::Paste);
+void ImageProcessing::_CreateOperationsMenuActions()
+  {
+  QMenu* p_operation_menu = menuBar()->addMenu(tr("&Operations"));
 
-  // setup view menu
+  mp_invert = p_operation_menu->addAction(tr("Invert"), this, &ImageProcessing::_Invert);
+  mp_invert->setEnabled(false);
+  }
+
+///////////////////////////////////////////////////////////////////////////////
+
+void ImageProcessing::_CreateViewMenuActions()
+  {
   QMenu* p_view_menu = menuBar()->addMenu(tr("&View"));
 
+  // zoom in
   mp_zoom_in = p_view_menu->addAction(tr("Zoom &In (25%)"), this, &ImageProcessing::_ZoomIn);
   mp_zoom_in->setShortcut(QKeySequence::ZoomIn);
   mp_zoom_in->setEnabled(false);
 
+  // zoom out
   mp_zoom_out = p_view_menu->addAction(tr("Zoom &Out (25%)"), this, &ImageProcessing::_ZoomOut);
   mp_zoom_out->setShortcut(QKeySequence::ZoomOut);
   mp_zoom_out->setEnabled(false);
 
+  // normal size
   mp_normal_size = p_view_menu->addAction(tr("&Normal Size"), this, &ImageProcessing::_NormalSize);
   mp_normal_size->setShortcut(tr("Ctrl+S"));
   mp_normal_size->setEnabled(false);
 
   p_view_menu->addSeparator();
 
+  // fit to window
   mp_fit_to_window = p_view_menu->addAction(tr("&Fit to Window"), this, &ImageProcessing::_FitToWindow);
   mp_fit_to_window->setEnabled(false);
   mp_fit_to_window->setCheckable(true);
   mp_fit_to_window->setShortcut(tr("Ctrl+F"));
+  }
 
-  // operations
-  QMenu* p_operation_menu = menuBar()->addMenu(tr("&Operations"));
+///////////////////////////////////////////////////////////////////////////////
 
-  mp_invert = p_operation_menu->addAction(tr("Invert"), this, &ImageProcessing::_Invert);
-  mp_invert->setEnabled(false);
+void ImageProcessing::_UpdateActions()
+  {
+  mp_save_as_action->setEnabled(!m_image.isNull());
+
+  mp_zoom_in->setEnabled(!mp_fit_to_window->isChecked());
+  mp_zoom_out->setEnabled(!mp_fit_to_window->isChecked());
+  mp_normal_size->setEnabled(!mp_fit_to_window->isChecked());
+
+  mp_invert->setEnabled(!m_image.isNull());
+  }
+
+///////////////////////////////////////////////////////////////////////////////
+
+bool ImageProcessing::_LoadImage(const QString & i_filename)
+  {
+  ImageIO loader;
+  if (!loader.Load(i_filename))
+    return false;
+
+  // set image
+  _SetImage(loader.Get());
+
+  setWindowFilePath(i_filename);
+  return true;
+  }
+
+///////////////////////////////////////////////////////////////////////////////
+
+bool ImageProcessing::_SaveImage(const QString & i_filename)
+  {
+  ImageIO saver;
+  saver.Set(m_image);
+  return saver.Save(i_filename);
   }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -170,32 +214,11 @@ void ImageProcessing::_SetImage(const QImage & i_image)
 
   mp_fit_to_window->setEnabled(true);
 
+  // update
   _UpdateActions();
 
   if (!mp_fit_to_window->isChecked())
     mp_image_label->adjustSize();
-  }
-
-///////////////////////////////////////////////////////////////////////////////
-
-bool ImageProcessing::_SaveImage(const QString & i_filename)
-  {
-  ImageIO saver;
-  saver.Set(m_image);
-  return saver.Save(i_filename);
-  }
-
-///////////////////////////////////////////////////////////////////////////////
-
-void ImageProcessing::_UpdateActions()
-  {
-  mp_save_as->setEnabled(!m_image.isNull());
-
-  mp_zoom_in->setEnabled(!mp_fit_to_window->isChecked());
-  mp_zoom_out->setEnabled(!mp_fit_to_window->isChecked());
-  mp_normal_size->setEnabled(!mp_fit_to_window->isChecked());
-
-  mp_invert->setEnabled(!m_image.isNull());
   }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -260,6 +283,7 @@ void ImageProcessing::_AdjustScrollBar(QScrollBar* op_scroll_bar, double i_facto
 void ImageProcessing::_Invert()
   {
   m_image = mp_image_label->pixmap()->toImage();
-  m_image.invertPixels(QImage::InvertMode::InvertRgb);
+  ImageOperationInvertPixels<QImage> operation(m_image);
+  operation.Apply();
   mp_image_label->setPixmap(QPixmap::fromImage(m_image));
   }
