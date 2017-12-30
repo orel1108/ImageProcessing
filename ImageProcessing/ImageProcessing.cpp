@@ -13,6 +13,8 @@
 #include <QScrollBar>
 #include <QStandardPaths>
 
+#include "ImageIO.h"
+
 namespace
   {
   void _InitializeImageFileDialog(QFileDialog & o_dialog, const QFileDialog::AcceptMode & i_accept_mode)
@@ -69,14 +71,11 @@ ImageProcessing::ImageProcessing(QWidget * ip_parent)
 
 bool ImageProcessing::LoadImage(const QString & i_filename)
   {
-  QImageReader reader(i_filename);
-  reader.setAutoTransform(true);
-
-  const auto image = reader.read();
-  if (image.isNull())
+  ImageIO loader;
+  if (!loader.Load(i_filename))
     return false;
 
-  _SetImage(image);
+  _SetImage(loader.Get());
   setWindowFilePath(i_filename);
   return true;
   }
@@ -181,8 +180,9 @@ void ImageProcessing::_SetImage(const QImage & i_image)
 
 bool ImageProcessing::_SaveImage(const QString & i_filename)
   {
-  QImageWriter writer(i_filename);
-  return writer.write(m_image);
+  ImageIO saver;
+  saver.Set(m_image);
+  return saver.Save(i_filename);
   }
 
 ///////////////////////////////////////////////////////////////////////////////
