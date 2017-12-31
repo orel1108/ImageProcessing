@@ -15,6 +15,7 @@
 
 #include "ImageIO.h"
 #include "ImageOperationInvertPixels.h"
+#include "Wrappers/QImageWrapper.h"
 
 namespace
   {
@@ -283,7 +284,8 @@ void ImageProcessing::_AdjustScrollBar(QScrollBar* op_scroll_bar, double i_facto
 void ImageProcessing::_Invert()
   {
   m_image = mp_image_label->pixmap()->toImage();
-  ImageOperationInvertPixels<QImage> operation(m_image);
+  QImageWrapper wrapper(m_image);
+  ImageOperationInvertPixels<QImageWrapper> operation(wrapper);
   operation.Apply();
   mp_image_label->setPixmap(QPixmap::fromImage(m_image));
   }
