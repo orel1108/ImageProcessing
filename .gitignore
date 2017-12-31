@@ -71,5 +71,6 @@ Thumbs.db
 *.dll
 *.exe
 
-ImageProcessing/.vs
-ImageProcessing/x64
+ImageProcessing.dir
+x64/
+build/

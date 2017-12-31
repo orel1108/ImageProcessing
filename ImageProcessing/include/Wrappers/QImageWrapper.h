@@ -1,6 +1,6 @@
 #pragma once
 
-#include "QRectWrapper.h"
+#include <Wrappers/QRectWrapper.h>
 
 #include <QImage>
 

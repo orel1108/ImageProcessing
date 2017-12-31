@@ -1,4 +1,4 @@
-#include "ImageProcessing.h"
+#include <ImageProcessing.h>
 
 #include <QtWidgets/QApplication>
 

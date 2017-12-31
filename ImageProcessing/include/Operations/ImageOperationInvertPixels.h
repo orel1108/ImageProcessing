@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IImageOperationBase.h"
+#include <Operations/IImageOperationBase.h>
 
 /**
  * @class ImageOperationInvertPixels

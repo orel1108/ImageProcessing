@@ -1,4 +1,4 @@
-#include "ImageProcessing.h"
+#include <ImageProcessing.h>
 
 #include <QByteArray>
 #include <QFileDialog>
@@ -13,9 +13,9 @@
 #include <QScrollBar>
 #include <QStandardPaths>
 
-#include "ImageIO.h"
-#include "ImageOperationInvertPixels.h"
-#include "Wrappers/QImageWrapper.h"
+#include <IO/ImageIO.h>
+#include <Operations/ImageOperationInvertPixels.h>
+#include <Wrappers/QImageWrapper.h>
 
 namespace
   {
