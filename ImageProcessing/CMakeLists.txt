@@ -15,14 +15,13 @@ set(INCLUDE_DIR
     include/IO/ImageIO.h
     include/Operations/IImageOperationBase.h
     include/Operations/ImageOperationInvertPixels.h
+    include/Operations/ImageOperationLinearFilter.h
     include/Wrappers/QImageWrapper.h
-    include/Wrappers/QRectWrapper.h
     include/ImageProcessing.h)
 
 set(SOURCE_FILES main.cpp
     src/IO/ImageIO.cpp
     src/Wrappers/QImageWrapper.cpp
-    src/Wrappers/QRectWrapper.cpp
     src/ImageProcessing.cpp)
 
 add_executable(${PROJECT_NAME} ${INCLUDE_DIR} ${SOURCE_FILES})

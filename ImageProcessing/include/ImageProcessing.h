@@ -44,6 +44,10 @@ class ImageProcessing : public QMainWindow
     QAction* mp_zoom_out;
     QAction* mp_normal_size;
 
+    /// filtering menu
+    QMenu* mp_filter_menu;
+    QAction* mp_rect5x5_filter;
+
     QAction* mp_invert;
 
     // actions setup
@@ -66,6 +70,8 @@ class ImageProcessing : public QMainWindow
     void _ZoomOut();
     void _ScaleImage(double i_factor);
     void _AdjustScrollBar(QScrollBar* op_scroll_bar, double i_factor);
+
+    void _Rect5x5Filter();
 
     void _Invert();
   };

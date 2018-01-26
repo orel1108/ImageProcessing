@@ -4,10 +4,10 @@
 #include <QString>
 
 /**
- * class ImageIO
- * @brief Class implements image load / save operations.
+ * class QImageIO
+ * @brief Class implements Qt image load / save operations.
  */
-class ImageIO
+class QImageIO final
   {
   public:
     /**

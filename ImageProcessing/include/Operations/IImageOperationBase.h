@@ -15,8 +15,6 @@ class IImageOperationBase
     using TPixelType = typename TImage::TPixelType;
     /// Type of image size.
     using TSizeType  = typename TImage::TSizeType;
-    /// Type of rectangle.
-    using TRectType  = typename TImage::TRectType;
 
     /**
      * @brief Constructor.
@@ -29,13 +27,6 @@ class IImageOperationBase
      * @return true on operation success and false otherwise.
      */
     virtual bool Apply() = 0;
-
-    /**
-     * @brief Pure virtual function, applies operation on image in region.
-     * @param[in] i_region Image region to be processed.
-     * @return true on operation success and false otherwise.
-     */
-    virtual bool Apply(const TRectType& i_region) = 0;
 
   protected:
     TImage& m_image;

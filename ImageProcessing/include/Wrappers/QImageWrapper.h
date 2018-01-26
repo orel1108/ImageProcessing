@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Wrappers/QRectWrapper.h>
-
 #include <QImage>
 
 #include <cstdint>
@@ -19,8 +17,6 @@ class QImageWrapper
     using TPixelType = std::uint32_t;
     /// Type of image size.
     using TSizeType  = std::uint64_t;
-    /// Type of rectangle.
-    using TRectType  = QRectWrapper;
 
     /**
      * @brief Constructor.
