@@ -14,39 +14,13 @@
 #include <QStandardPaths>
 
 #include <IO/ImageIO.h>
+#include <Operations/ImageOperationBoxFilter.h>
+#include <Operations/ImageOperationGaussianFilter.h>
 #include <Operations/ImageOperationInvertPixels.h>
-#include <Operations/ImageOperationLinearFilter.h>
 #include <Wrappers/QImageWrapper.h>
 
 namespace
   {
-  class FilterKernel
-    {
-    public:
-      FilterKernel()
-        {
-        m_data = std::vector<std::vector<double>>(5, std::vector<double>(5, 1.0 / 25));
-        }
-
-      std::size_t NumbefOfRows() const
-        {
-        return m_data.size();
-        }
-
-      std::size_t NumbefOfCols() const
-        {
-        return m_data[0].size();
-        }
-
-      double At(int i_x, int i_y)
-        {
-        return m_data[i_x][i_y];
-        }
-
-    private:
-      std::vector<std::vector<double>> m_data;
-    };
-
   void _InitializeImageFileDialog(QFileDialog & o_dialog, const QFileDialog::AcceptMode & i_accept_mode)
     {
     static bool first_dialog = true;
@@ -163,7 +137,8 @@ void ImageProcessing::_CreateOperationsMenuActions()
   mp_filter_menu = p_operation_menu->addMenu(tr("&Filter"));
   mp_filter_menu->setEnabled(false);
 
-  mp_rect5x5_filter = mp_filter_menu->addAction(tr("&Rectangular"), this, &ImageProcessing::_Rect5x5Filter);
+  mp_box5x5_filter = mp_filter_menu->addAction(tr("&Box"), this, &ImageProcessing::_Box5x5Filter);
+  mp_gaussian5x5_filter = mp_filter_menu->addAction(tr("&Gaussian"), this, &ImageProcessing::_Gaussian5x5Filter);
   }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -315,11 +290,22 @@ void ImageProcessing::_AdjustScrollBar(QScrollBar* op_scroll_bar, double i_facto
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void ImageProcessing::_Rect5x5Filter()
+void ImageProcessing::_Box5x5Filter()
   {
   m_image = mp_image_label->pixmap()->toImage();
   QImageWrapper wrapper(m_image);
-  ImageOperationLinearFilterPixels<QImageWrapper, FilterKernel> filter(wrapper);
+  ImageOperationBoxFilter<QImageWrapper, 5> filter(wrapper);
+  filter.Apply();
+  mp_image_label->setPixmap(QPixmap::fromImage(m_image));
+  }
+
+///////////////////////////////////////////////////////////////////////////////
+
+void ImageProcessing::_Gaussian5x5Filter()
+  {
+  m_image = mp_image_label->pixmap()->toImage();
+  QImageWrapper wrapper(m_image);
+  ImageOperationGaussianFilter<QImageWrapper, 5> filter(wrapper);
   filter.Apply();
   mp_image_label->setPixmap(QPixmap::fromImage(m_image));
   }

@@ -7,10 +7,11 @@
 /**
  * @class ImageOperationLinearFilterPixels
  * @brief Class implement image pixels linear filtering.
- * @tparam Type of image to be processed.
+ * @tparam TImage Type of image to be processed.
+ * @tparam TMatrix Type of kernel matrix.
  */
 template<class TImage, class TMatrix>
-class ImageOperationLinearFilterPixels final : public IImageOperationBase<TImage>
+class ImageOperationLinearFilterPixels : public IImageOperationBase<TImage>
   {
   public:
     /**
@@ -29,7 +30,7 @@ class ImageOperationLinearFilterPixels final : public IImageOperationBase<TImage
      * @brief Sets matrix used for filtering.
      * @param[in] i_matrix Kernel matrix.
      */
-    void SetKernel(const TMatrix& i_matrix) noexcept;
+    void SetMatrix(const TMatrix& i_matrix) noexcept;
    
   private:
     TMatrix m_matrix;
@@ -80,7 +81,7 @@ bool ImageOperationLinearFilterPixels<TImage, TMatrix>::Apply()
 ///////////////////////////////////////////////////////////////////////////////
 
 template<class TImage, class TMatrix>
-void ImageOperationLinearFilterPixels<TImage, TMatrix>::SetKernel(const TMatrix& i_matrix) noexcept
+void ImageOperationLinearFilterPixels<TImage, TMatrix>::SetMatrix(const TMatrix& i_matrix) noexcept
   {
   m_matrix = i_matrix;
   }

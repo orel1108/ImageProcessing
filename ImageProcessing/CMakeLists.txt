@@ -4,6 +4,8 @@ project(ImageProcessing)
  
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_AUTOMOC ON)
+
+add_definitions(-D_USE_MATH_DEFINES)
  
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
@@ -12,8 +14,11 @@ find_package(Qt5Widgets REQUIRED)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 set(INCLUDE_DIR
+    include/Common/Matrix.h
     include/IO/ImageIO.h
     include/Operations/IImageOperationBase.h
+    include/Operations/ImageOperationBoxFilter.h
+    include/Operations/ImageOperationGaussianFilter.h
     include/Operations/ImageOperationInvertPixels.h
     include/Operations/ImageOperationLinearFilter.h
     include/Wrappers/QImageWrapper.h

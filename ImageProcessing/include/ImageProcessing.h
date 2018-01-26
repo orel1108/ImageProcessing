@@ -46,7 +46,8 @@ class ImageProcessing : public QMainWindow
 
     /// filtering menu
     QMenu* mp_filter_menu;
-    QAction* mp_rect5x5_filter;
+    QAction* mp_box5x5_filter;
+    QAction* mp_gaussian5x5_filter;
 
     QAction* mp_invert;
 
@@ -71,7 +72,8 @@ class ImageProcessing : public QMainWindow
     void _ScaleImage(double i_factor);
     void _AdjustScrollBar(QScrollBar* op_scroll_bar, double i_factor);
 
-    void _Rect5x5Filter();
+    void _Box5x5Filter();
+    void _Gaussian5x5Filter();
 
     void _Invert();
   };
