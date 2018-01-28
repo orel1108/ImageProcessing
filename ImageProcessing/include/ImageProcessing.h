@@ -48,6 +48,7 @@ class ImageProcessing : public QMainWindow
     QMenu* mp_filter_menu;
     QAction* mp_box5x5_filter;
     QAction* mp_gaussian5x5_filter;
+    QAction* mp_circular5x5_filter;
 
     QAction* mp_invert;
 
@@ -74,6 +75,7 @@ class ImageProcessing : public QMainWindow
 
     void _Box5x5Filter();
     void _Gaussian5x5Filter();
+    void _Circular5x5Filter();
 
     void _Invert();
   };

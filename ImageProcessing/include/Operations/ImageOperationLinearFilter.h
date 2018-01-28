@@ -26,13 +26,7 @@ class ImageOperationLinearFilterPixels : public IImageOperationBase<TImage>
      */
     bool Apply() override;
 
-    /**
-     * @brief Sets matrix used for filtering.
-     * @param[in] i_matrix Kernel matrix.
-     */
-    void SetMatrix(const TMatrix& i_matrix) noexcept;
-   
-  private:
+  protected:
     TMatrix m_matrix;
   };
 
@@ -77,13 +71,3 @@ bool ImageOperationLinearFilterPixels<TImage, TMatrix>::Apply()
 
   return true;
   }
-
-///////////////////////////////////////////////////////////////////////////////
-
-template<class TImage, class TMatrix>
-void ImageOperationLinearFilterPixels<TImage, TMatrix>::SetMatrix(const TMatrix& i_matrix) noexcept
-  {
-  m_matrix = i_matrix;
-  }
-
-///////////////////////////////////////////////////////////////////////////////

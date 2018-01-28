@@ -41,5 +41,3 @@ IImageOperationBase<TImage>::IImageOperationBase(TImage& io_image) noexcept
   : m_image(io_image)
   {
   }
-
-///////////////////////////////////////////////////////////////////////////////

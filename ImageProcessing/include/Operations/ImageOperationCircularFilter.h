@@ -7,13 +7,13 @@
 #include <cstddef>
 
 /**
- * @class ImageOperationGaussianFilter
- * @brief Class implements "Gaussian filter".
+ * @class ImageOperationCircularFilter
+ * @brief Class implements "Circular filter".
  * @tparam TImage Type of image.
  * @tparam TSize Size of filter matrix.
  */
 template<class TImage, std::uint8_t TSize>
-class ImageOperationGaussianFilter final
+class ImageOperationCircularFilter final
   : ImageOperationLinearFilterPixels<TImage, Matrix<TSize, TSize>>
   {
   static_assert(TSize % 2 == 1, "Filter size should be odd.");
@@ -25,7 +25,7 @@ class ImageOperationGaussianFilter final
      * @brief Constructor.
      * @param[in,out] Image to be processed.
      */
-    ImageOperationGaussianFilter(TImage& io_image);
+    ImageOperationCircularFilter(TImage& io_image);
 
     /**
      * @brief Filters pixels in image.
@@ -42,14 +42,14 @@ class ImageOperationGaussianFilter final
 ///////////////////////////////////////////////////////////////////////////////
 
 template<class TImage, std::uint8_t TSize>
-ImageOperationGaussianFilter<TImage, TSize>::ImageOperationGaussianFilter(TImage& io_image)
+ImageOperationCircularFilter<TImage, TSize>::ImageOperationCircularFilter(TImage& io_image)
   : BaseFilter(io_image)
   {}
 
 ///////////////////////////////////////////////////////////////////////////////
 
 template<class TImage, std::uint8_t TSize>
-bool ImageOperationGaussianFilter<TImage, TSize>::Apply()
+bool ImageOperationCircularFilter<TImage, TSize>::Apply()
   {
   if (!m_image.IsValid())
     return false;
@@ -61,22 +61,26 @@ bool ImageOperationGaussianFilter<TImage, TSize>::Apply()
 ///////////////////////////////////////////////////////////////////////////////
 
 template<class TImage, std::uint8_t TSize>
-void ImageOperationGaussianFilter<TImage, TSize>::_SetupMatrix()
+void ImageOperationCircularFilter<TImage, TSize>::_SetupMatrix()
   {
-  const double sigma  = 1.0;
-  const double denum = 2 * sigma * sigma;
-  const double coeff = denum * M_PI;
-
   const auto hr = static_cast<TIndexType>(TSize) / 2;
   const auto hc = static_cast<TIndexType>(TSize) / 2;
+  
+  const auto radius = TSize * TSize / 4;
+
+  std::uint16_t counter = 0;
   for (TIndexType r = 0; r < static_cast<TIndexType>(TSize); ++r)
-    {
     for (TIndexType c = 0; c < static_cast<TIndexType>(TSize); ++c)
       {
-      const auto numer = (r - hr) * (r - hr) + (c - hc) * (c - hc);
-      const auto expon = std::exp(-numer / denum);
-      const auto value = expon / coeff;
-      m_matrix.At(r, c) = value;
+      const auto sqr_dist = (r - hr) * (r - hr) + (c - hc) * (c - hc);
+      if (sqr_dist <= radius)
+        {
+        m_matrix.At(r, c) = 1.0;
+        counter++;
+        }
       }
-    }
+
+  for (TIndexType r = 0; r < static_cast<TIndexType>(TSize); ++r)
+    for (TIndexType c = 0; c < static_cast<TIndexType>(TSize); ++c)
+        m_matrix.At(r, c) /= counter;
   }

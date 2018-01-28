@@ -18,6 +18,7 @@ set(INCLUDE_DIR
     include/IO/ImageIO.h
     include/Operations/IImageOperationBase.h
     include/Operations/ImageOperationBoxFilter.h
+    include/Operations/ImageOperationCircularFilter.h
     include/Operations/ImageOperationGaussianFilter.h
     include/Operations/ImageOperationInvertPixels.h
     include/Operations/ImageOperationLinearFilter.h

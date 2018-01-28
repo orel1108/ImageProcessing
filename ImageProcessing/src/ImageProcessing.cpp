@@ -15,6 +15,7 @@
 
 #include <IO/ImageIO.h>
 #include <Operations/ImageOperationBoxFilter.h>
+#include <Operations/ImageOperationCircularFilter.h>
 #include <Operations/ImageOperationGaussianFilter.h>
 #include <Operations/ImageOperationInvertPixels.h>
 #include <Wrappers/QImageWrapper.h>
@@ -139,6 +140,7 @@ void ImageProcessing::_CreateOperationsMenuActions()
 
   mp_box5x5_filter = mp_filter_menu->addAction(tr("&Box"), this, &ImageProcessing::_Box5x5Filter);
   mp_gaussian5x5_filter = mp_filter_menu->addAction(tr("&Gaussian"), this, &ImageProcessing::_Gaussian5x5Filter);
+  mp_circular5x5_filter = mp_filter_menu->addAction(tr("&Circular"), this, &ImageProcessing::_Circular5x5Filter);
   }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -306,6 +308,17 @@ void ImageProcessing::_Gaussian5x5Filter()
   m_image = mp_image_label->pixmap()->toImage();
   QImageWrapper wrapper(m_image);
   ImageOperationGaussianFilter<QImageWrapper, 5> filter(wrapper);
+  filter.Apply();
+  mp_image_label->setPixmap(QPixmap::fromImage(m_image));
+  }
+
+///////////////////////////////////////////////////////////////////////////////
+
+void ImageProcessing::_Circular5x5Filter()
+  {
+  m_image = mp_image_label->pixmap()->toImage();
+  QImageWrapper wrapper(m_image);
+  ImageOperationCircularFilter<QImageWrapper, 5> filter(wrapper);
   filter.Apply();
   mp_image_label->setPixmap(QPixmap::fromImage(m_image));
   }
