@@ -10,6 +10,8 @@
 class QAction;
 class QScrollBar;
 
+class BoxFilterWidget;
+
 /**
  * @class ImageProcessing.
  * @brief Class implements image processing GUI.
@@ -50,7 +52,11 @@ class ImageProcessing : public QMainWindow
     QAction* mp_gaussian5x5_filter;
     QAction* mp_circular5x5_filter;
 
+    QAction* mp_gray_scale;
+
     QAction* mp_invert;
+
+    BoxFilterWidget* mp_box_filter_widget = nullptr;
 
     // actions setup
     void _CreateActions();
@@ -76,6 +82,7 @@ class ImageProcessing : public QMainWindow
     void _Box5x5Filter();
     void _Gaussian5x5Filter();
     void _Circular5x5Filter();
+    void _ToGrayScale();
 
     void _Invert();
   };

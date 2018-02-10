@@ -17,8 +17,10 @@
 #include <Operations/ImageOperationBoxFilter.h>
 #include <Operations/ImageOperationCircularFilter.h>
 #include <Operations/ImageOperationGaussianFilter.h>
+#include <Operations/ImageOperationGrayScale.h>
 #include <Operations/ImageOperationInvertPixels.h>
 #include <Wrappers/QImageWrapper.h>
+#include <BoxFilterWidget.h>
 
 namespace
   {
@@ -141,6 +143,8 @@ void ImageProcessing::_CreateOperationsMenuActions()
   mp_box5x5_filter = mp_filter_menu->addAction(tr("&Box"), this, &ImageProcessing::_Box5x5Filter);
   mp_gaussian5x5_filter = mp_filter_menu->addAction(tr("&Gaussian"), this, &ImageProcessing::_Gaussian5x5Filter);
   mp_circular5x5_filter = mp_filter_menu->addAction(tr("&Circular"), this, &ImageProcessing::_Circular5x5Filter);
+
+  mp_gray_scale = mp_filter_menu->addAction(tr("&To gray scale"), this, &ImageProcessing::_ToGrayScale);
   }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -294,6 +298,10 @@ void ImageProcessing::_AdjustScrollBar(QScrollBar* op_scroll_bar, double i_facto
 
 void ImageProcessing::_Box5x5Filter()
   {
+  if (!mp_box_filter_widget)
+    mp_box_filter_widget = new BoxFilterWidget();
+  mp_box_filter_widget->show();
+
   m_image = mp_image_label->pixmap()->toImage();
   QImageWrapper wrapper(m_image);
   ImageOperationBoxFilter<QImageWrapper, 5> filter(wrapper);
@@ -319,6 +327,17 @@ void ImageProcessing::_Circular5x5Filter()
   m_image = mp_image_label->pixmap()->toImage();
   QImageWrapper wrapper(m_image);
   ImageOperationCircularFilter<QImageWrapper, 5> filter(wrapper);
+  filter.Apply();
+  mp_image_label->setPixmap(QPixmap::fromImage(m_image));
+  }
+
+///////////////////////////////////////////////////////////////////////////////
+
+void ImageProcessing::_ToGrayScale()
+  {
+  m_image = mp_image_label->pixmap()->toImage();
+  QImageWrapper wrapper(m_image);
+  ImageOperationGrayScale<QImageWrapper> filter(wrapper);
   filter.Apply();
   mp_image_label->setPixmap(QPixmap::fromImage(m_image));
   }

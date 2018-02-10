@@ -20,14 +20,17 @@ set(INCLUDE_DIR
     include/Operations/ImageOperationBoxFilter.h
     include/Operations/ImageOperationCircularFilter.h
     include/Operations/ImageOperationGaussianFilter.h
+    include/Operations/ImageOperationGrayScale.h
     include/Operations/ImageOperationInvertPixels.h
     include/Operations/ImageOperationLinearFilter.h
     include/Wrappers/QImageWrapper.h
+    include/BoxFilterWidget.h
     include/ImageProcessing.h)
 
 set(SOURCE_FILES main.cpp
     src/IO/ImageIO.cpp
     src/Wrappers/QImageWrapper.cpp
+    src/BoxFilterWidget.cpp
     src/ImageProcessing.cpp)
 
 add_executable(${PROJECT_NAME} ${INCLUDE_DIR} ${SOURCE_FILES})
